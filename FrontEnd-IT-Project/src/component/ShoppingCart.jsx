@@ -61,12 +61,13 @@ const ShoppingCart = () => {
   // Handle checkout
   const handleCheckout = () => {
     navigate('/checkout');
+    console.log(cart);
   };
 
   return (
     <div className='bg-[#f1eeee] min-h-screen text-black p-8'>
       <h1 className='text-4xl font-bold mb-8'>Shopping Cart</h1>
-      
+
       {cart.length === 0 ? (
         <p>Your cart is empty.</p>
       ) : (
@@ -75,57 +76,71 @@ const ShoppingCart = () => {
             <thead className='bg-red-600 text-white'>
               <tr>
                 <th className='p-4'>
-                  <input 
-                    type="checkbox" 
-                    className='mr-2 ' 
-                    checked={selectAll} 
+                  <input
+                    type="checkbox"
+                    className='mr-2 '
+                    checked={selectAll}
                     onChange={handleSelectAll}  // Select all or unselect all
-                  /> 
+                  />
                   Product
                 </th>
-                <th className='p-4 text-white'>Unit Price</th>
-                <th className='p-4 text-white'>Quantity</th>
-                <th className='p-4 text-white'>Total Price</th>
+                <th className='p-4'>Image</th>
+                <th className='p-4'>Unit Price</th>
+                <th className='p-4'>Quantity</th>
+                <th className='p-4'>Total Price</th>
               </tr>
             </thead>
             <tbody>
-              {cart.map(item => (
-                <tr key={item.product_id} className='border-t border-gray-600'>
-                  <td className='p-4 '>
-                    <input 
-                      type="checkbox" 
-                      className='mr-2' 
-                      checked={selectedItems.includes(item.product_id)}  // Check if the item is selected
-                      onChange={() => handleSelectItem(item.product_id)}  // Handle individual selection
-                    />
-                    {item.name}
-                  </td>
-                  <td className='p-4'>B {item.price}</td>
-                  <td className='p-4'>
-                    <button 
-                      onClick={() => handleUpdateQuantity(item.product_id, -1)} 
-                      className='px-2 py-1 bg-red-600 text-white rounded mr-2'
-                      disabled={item.quantity <= 1}
-                    >
-                      -
-                    </button>
-                    {item.quantity}
-                    <button 
-                      onClick={() => handleUpdateQuantity(item.product_id, 1)} 
-                      className='px-2 py-1 bg-red-600 text-white rounded ml-2'
-                    >
-                      +
-                    </button>
-                  </td>
-                  <td className='p-4'>B {item.price * item.quantity}</td>
-                </tr>
-              ))}
+              {cart.map(item => {
+                console.log(item); // Log each item in the cart
+
+                return (
+                  <tr key={item.product_id} className='border-t border-gray-600'>
+                    <td className='p-4'>
+                      <input
+                        type="checkbox"
+                        className='mr-2'
+                        checked={selectedItems.includes(item.product_id)}  // Check if the item is selected
+                        onChange={() => handleSelectItem(item.product_id)}  // Handle individual selection
+                      />
+                      {item.name}
+                    </td>
+                    <td className='p-4'>
+                      <img
+                        src={`http://localhost:8080${item.image_url}`} // Prepend server URL
+                        alt={item.name}
+                        className='w-20 h-20 object-cover rounded'
+                      />
+                    </td>
+
+                    <td className='p-4'>B {item.price}</td>
+                    <td className='p-4'>
+                      <button
+                        onClick={() => handleUpdateQuantity(item.product_id, -1)}
+                        className='px-2 py-1 bg-red-600 text-white rounded mr-2'
+                        disabled={item.quantity <= 1}
+                      >
+                        -
+                      </button>
+                      {item.quantity}
+                      <button
+                        onClick={() => handleUpdateQuantity(item.product_id, 1)}
+                        className='px-2 py-1 bg-red-600 text-white rounded ml-2'
+                      >
+                        +
+                      </button>
+                    </td>
+                    <td className='p-4'>B {item.price * item.quantity}</td>
+                  </tr>
+                );
+              })}
             </tbody>
+
           </table>
 
           <div className='flex justify-between items-center mt-8'>
             <div>
-              <button 
+              <button
                 onClick={handleDeleteSelected}  // Handle deleting selected items
                 className={`bg-red-500 text-white px-4 py-2 rounded ${selectedItems.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
                 disabled={selectedItems.length === 0}  // Disable the button if no items are selected
@@ -135,7 +150,7 @@ const ShoppingCart = () => {
             </div>
             <div className='text-lg'>
               Total ({cart.length} items): <span className='font-bold'>B {getTotalPrice()}</span>
-              <button 
+              <button
                 className='ml-4 bg-blue-500 text-white px-4 py-2 rounded'
                 onClick={handleCheckout}  // Handle checkout
               >

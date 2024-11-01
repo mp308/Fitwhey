@@ -38,9 +38,11 @@ export const CartProvider = ({ children }) => {
           : item
       ));
     } else {
+      // Ensure product has an image property when adding to the cart
       setCart([...cart, { ...product, quantity }]);
     }
   };
+  
 
   // Remove single item from the cart
   const removeItemFromCart = (product_id) => {

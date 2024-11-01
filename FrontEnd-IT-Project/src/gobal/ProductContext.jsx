@@ -12,7 +12,10 @@ export const ProductProvider = ({ children }) => {
     name: '',
     description: '',
     price: '',  // Ensure this is a number before sending
-    category: '',
+    size: '',
+    Nutritional_value: '',
+    taste: '',
+    CategoryID: '',
     image_url: ''
   });
   const [message, setMessage] = useState('');
@@ -34,7 +37,10 @@ export const ProductProvider = ({ children }) => {
     formData.append('name', product.name);
     formData.append('description', product.description);
     formData.append('price', Number(product.price));  // Ensure price is a number
-    formData.append('category', product.category);
+    formData.append('CategoryID', product.CategoryID);
+    formData.append('size', product.size);
+    formData.append('Nutritional_value',product.Nutritional_value);
+    formData.append('taste', product.taste);
     if (file) {
       formData.append('image', file);  // Append the image file
     } else {
@@ -62,7 +68,10 @@ export const ProductProvider = ({ children }) => {
     formData.append('name', product.name);
     formData.append('description', product.description);
     formData.append('price', Number(product.price));  // Ensure price is a number
-    formData.append('category', product.category);
+    formData.append('CategoryID', product.CategoryID);
+    formData.append('size', product.size);
+    formData.append('Nutritional_value',product.Nutritional_value);
+    formData.append('taste', product.taste);
     if (file) {
       formData.append('image', file);  // Append the image file
     } else {
@@ -103,7 +112,10 @@ export const ProductProvider = ({ children }) => {
       name: '',
       description: '',
       price: '',
-      category: '',
+      size: '',
+      Nutritional_value: '',
+      taste: '',
+      CategoryID: '',
       image_url: ''
     });
   };

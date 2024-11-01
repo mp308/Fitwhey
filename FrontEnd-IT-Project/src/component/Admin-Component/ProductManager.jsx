@@ -1,5 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import ProductContext from '../../gobal/ProductContext';
+import axios from 'axios';
 
 const ProductManager = () => {
   const {
@@ -7,22 +8,35 @@ const ProductManager = () => {
     product,
     message,
     setProduct,
-    createProductWithImage,   // Create product with image
-    updateProductWithImage,   // Update product with image
+    createProductWithImage,
+    updateProductWithImage,
     deleteProduct,
     editProduct,
     clearForm,
   } = useContext(ProductContext);
 
-  const [image, setImage] = useState(null);  // State to hold the image file
-  const [preview, setPreview] = useState(null);  // State to hold the preview URL
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [categories, setCategories] = useState([]); // State for categories list
 
-  // When user selects a new image, generate a preview URL
+  // Fetch categories from the API on component load
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/v1/category');
+        setCategories(response.data); // Set categories to state
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setImage(file);
 
-    // Generate preview URL
     if (file) {
       const previewUrl = URL.createObjectURL(file);
       setPreview(previewUrl);
@@ -32,9 +46,9 @@ const ProductManager = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (product.product_id) {
-      updateProductWithImage(image);  // Update existing product
+      updateProductWithImage(image);
     } else {
-      createProductWithImage(image);  // Create new product
+      createProductWithImage(image);
     }
   };
 
@@ -42,9 +56,7 @@ const ProductManager = () => {
     <div className="container mx-auto p-8">
       <h2 className="text-2xl font-bold mb-4">Product Manager</h2>
 
-      {/* Form for creating or updating a product */}
       <form onSubmit={handleSubmit} className="mb-8">
-
         <input
           type="text"
           placeholder="Product Name"
@@ -69,26 +81,56 @@ const ProductManager = () => {
           required
           className="block w-full p-2 mb-4 border"
         />
+
+        {/* Dropdown for Category Selection */}
+        <select
+          value={product.CategoryID || ''}
+          onChange={(e) => setProduct({ ...product, CategoryID: e.target.value })}
+          required
+          className="block w-full p-2 mb-4 border"
+        >
+          <option value="" disabled>Select Category</option>
+          {categories.map((category) => (
+            <option key={category.CategoriesID} value={category.CategoriesID}>
+              {category.CategoriesName}
+            </option>
+          ))}
+        </select>
+
         <input
           type="text"
-          placeholder="Category"
-          value={product.category}
-          onChange={(e) => setProduct({ ...product, category: e.target.value })}
+          placeholder="Nutritional_value"
+          value={product.Nutritional_value}
+          onChange={(e) => setProduct({ ...product, Nutritional_value: e.target.value })}
+          required
+          className="block w-full p-2 mb-4 border"
+        />
+        <input
+          type="text"
+          placeholder="taste"
+          value={product.taste}
+          onChange={(e) => setProduct({ ...product, taste: e.target.value })}
+          required
+          className="block w-full p-2 mb-4 border"
+        />
+        <input
+          type="text"
+          placeholder="size"
+          value={product.size}
+          onChange={(e) => setProduct({ ...product, size: e.target.value })}
           required
           className="block w-full p-2 mb-4 border"
         />
 
-        {/* Image Upload */}
         <div className="mb-4">
           <label className="block text-gray-700">Product Image</label>
           <input
             type="file"
-            onChange={handleImageChange}  // Save image file to state and generate preview
+            onChange={handleImageChange}
             className="block w-full p-2 mb-4 border"
           />
         </div>
 
-        {/* Image Preview */}
         {preview && (
           <div className="mb-4">
             <p className="text-gray-700">Image Preview:</p>
@@ -104,10 +146,8 @@ const ProductManager = () => {
         </button>
       </form>
 
-      {/* Message */}
       {message && <p className="text-green-500 mb-4">{message}</p>}
 
-      {/* Product list */}
       <h3 className="text-xl font-bold mb-4">Products List</h3>
       <table className="table-auto w-full mb-8">
         <thead>
@@ -115,7 +155,7 @@ const ProductManager = () => {
             <th className="px-4 py-2">ID</th>
             <th className="px-4 py-2">Name</th>
             <th className="px-4 py-2">Price</th>
-            <th className="px-4 py-2">Image</th>  {/* New Image Column */}
+            <th className="px-4 py-2">Image</th>
             <th className="px-4 py-2">Actions</th>
           </tr>
         </thead>
@@ -132,8 +172,6 @@ const ProductManager = () => {
                   <p>No image</p>
                 )}
               </td>
-
-
               <td className="border px-4 py-2">
                 <button
                   onClick={() => editProduct(prod)}
@@ -152,7 +190,6 @@ const ProductManager = () => {
           ))}
         </tbody>
       </table>
-
     </div>
   );
 };

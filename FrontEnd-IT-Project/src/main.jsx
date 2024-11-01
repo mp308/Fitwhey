@@ -15,11 +15,15 @@ import LoginPage from './pages/LoginPage';
 import SingUp from './pages/SignUpPage';
 import CheckOutPage from './pages/CheckOutPage';
 import ProfilePage from './pages/ProfilePage';
-import AdminPage from './pages/Admin-Page/AdminPage';
+import AdminPage from './Admin-Page/AdminPage';
 import ProductdetailPage from './pages/ProductdetailPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPassWordPage from './pages/ResetPassWordPage';
+import OrderDetailsPage from './pages/OrderDetailsPage';
 import { UserAuthContextProvider } from './gobal/UserAuthContext';
 import { ProductProvider } from './gobal/ProductContext';
 import { CartProvider } from './gobal/CartContext';
+
 
 
 const router = createBrowserRouter([
@@ -63,7 +67,19 @@ const router = createBrowserRouter([
   {
     path: "/Products/:id",
     element: <ProductdetailPage />,
-  }
+  },
+  {
+    path: "/Forgotpasseword",
+    element: <ForgotPasswordPage />
+  },
+  {
+    path: "/resetpassword",
+    element: <ResetPassWordPage/>
+  },
+  {
+    path: "/order-details/:orderId",
+    element: <OrderDetailsPage />,
+  },
 
 ]);
 

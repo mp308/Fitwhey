@@ -58,7 +58,9 @@ const LoginPage = () => {
       
       <p className="mt-4 text-gray-600">
         Don't have an account?{' '}
-        <Link to="/register" className="text-blue-500 hover:underline">Sign Up</Link>
+        <Link to="/register" className="text-blue-500 hover:underline">Sign Up</Link>{' '}
+        or{' '} 
+      <Link to="/Forgotpasseword" className="text-blue-500 hover:underline">Forgot password</Link>
       </p> {/* Sign Up Link */}
     </div>
   );

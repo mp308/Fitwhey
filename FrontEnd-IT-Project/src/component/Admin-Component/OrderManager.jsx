@@ -15,7 +15,6 @@ const OrderManager = () => {
         throw new Error('Failed to fetch orders');
       }
       const data = await response.json();
-      console.log("Fetched Orders:", data);
       setOrders(data);
       setLoading(false);
     } catch (err) {
@@ -57,14 +56,13 @@ const OrderManager = () => {
       full_name: order.full_name,
       shipping_address: order.shipping_address,
       phone_number: order.phone_number,
+      order_status: order.order_status || 'processing',
       orderdetails: order.orderdetails?.map(item => ({
         product_id: item.product_id,
         quantity: item.quantity,
         unit_price: item.unit_price,
       })) || []
     };
-
-    console.log("Editing Order Data:", formData);
     setEditFormData(formData);
   };
 
@@ -102,6 +100,7 @@ const OrderManager = () => {
       fullName: editFormData.full_name,
       shippingAddress: editFormData.shipping_address,
       phoneNumber: editFormData.phone_number,
+      orderStatus: editFormData.order_status,
       items: editFormData.orderdetails?.map(item => ({
         productId: item.product_id,
         quantity: parseInt(item.quantity),
@@ -111,7 +110,6 @@ const OrderManager = () => {
       totalAmount: parseFloat(editFormData.total_amount)
     };
 
-    console.log('Updated Data:', updatedData);
     try {
       const response = await fetch(`http://localhost:8080/api/orders/${editingOrderId}`, {
         method: 'PUT',
@@ -159,6 +157,7 @@ const OrderManager = () => {
             <th className="px-4 py-2">Order Date</th>
             <th className="px-4 py-2">Total Amount</th>
             <th className="px-4 py-2">Payment Status</th>
+            <th className="px-4 py-2">Order Status</th>
             <th className="px-4 py-2">Full Name</th>
             <th className="px-4 py-2">Shipping Address</th>
             <th className="px-4 py-2">Phone Number</th>
@@ -180,6 +179,7 @@ const OrderManager = () => {
                   ? order.payments[0].payment_status
                   : 'No payment data'}
               </td>
+              <td className="px-4 py-2">{order.order_status || 'N/A'}</td>
               <td className="px-4 py-2">{order.full_name || 'N/A'}</td>
               <td className="px-4 py-2">{order.shipping_address || 'N/A'}</td>
               <td className="px-4 py-2">{order.phone_number || 'N/A'}</td>
@@ -220,101 +220,22 @@ const OrderManager = () => {
           <h2 className="text-xl font-bold">Edit Order</h2>
           <form onSubmit={handleEditSubmit}>
             <div className="mb-4">
-              <label className="block text-gray-700">Order ID</label>
-              <p>{editFormData.order_id}</p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Customer ID</label>
-              <p>{editFormData.UserID}</p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Order Date</label>
-              <input
-                type="date"
-                name="order_date"
-                value={editFormData.order_date}
-                onChange={handleEditFormChange}
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Total Amount</label>
-              <input
-                type="number"
-                name="total_amount"
-                value={editFormData.total_amount}
-                onChange={handleEditFormChange}
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Payment Status</label>
+              <label className="block text-gray-700">Order Status</label>
               <select
-                name="payment_status"
-                value={editFormData.payment_status}
+                name="order_status"
+                value={editFormData.order_status}
                 onChange={handleEditFormChange}
                 className="w-full p-2 border border-gray-300 rounded"
               >
-                <option value="pending">Pending</option>
-                <option value="cancelled">Cancelled</option>
-                <option value="ship">Ship</option>
-                <option value="contactadmin">Contact Admin</option>
-                <option value="completed">Completed</option>
-                <option value="failed">Failed</option>
+                <option value="processing">processing</option>
+                <option value="completed">completed</option>
+                <option value="cancelled">cancelled</option>
+                <option value="shipping">shipping</option>
+                <option value="contactadmin">contactadmin</option>
+                <option value="failed">failed</option>
               </select>
             </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Full Name</label>
-              <input
-                type="text"
-                name="full_name"
-                value={editFormData.full_name}
-                onChange={handleEditFormChange}
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Shipping Address</label>
-              <input
-                type="text"
-                name="shipping_address"
-                value={editFormData.shipping_address}
-                onChange={handleEditFormChange}
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Phone Number</label>
-              <input
-                type="text"
-                name="phone_number"
-                value={editFormData.phone_number}
-                onChange={handleEditFormChange}
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Order Items</label>
-              <ul>
-                {editFormData.orderdetails?.map((item, index) => (
-                  <li key={item.product_id}>
-                    Product: {item.product_id}, Quantity: <input
-                      type="number"
-                      name="quantity"
-                      value={item.quantity}
-                      onChange={(e) => handleItemChange(index, e)}
-                      className="w-full p-2 border border-gray-300 rounded"
-                    />, Unit Price: <input
-                      type="number"
-                      name="unit_price"
-                      value={item.unit_price}
-                      onChange={(e) => handleItemChange(index, e)}
-                      className="w-full p-2 border border-gray-300 rounded"
-                    />
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {/* Other form fields like Total Amount, Payment Status, etc. */}
             <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">Save</button>
             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded ml-2" onClick={handleCancelEdit}>Cancel</button>
           </form>
